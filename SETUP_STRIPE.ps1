@@ -8,8 +8,8 @@ param(
 $ErrorActionPreference = "Continue"
 
 # Clés Stripe
-$PUBLIC_KEY = "pk_test_51SYfQuDpUNYp5tGjSvwwM05wod5r3b2UTzpeEZ9iZhgfm5r0BzLw4PAp2WbimzSpYsY9ShBZeZKGH5KMED0J5UCq001fMTwNjB"
-$SECRET_KEY = "sk_test_51SYfQuDpUNYp5tGjepuKD4X8mCUym8aQ7oaODbdR2B1nrZvmNkmrntuZlmp74gyfMnoZxaBLRK1NHif5tDawtszk00SqMh3AXU"
+$PUBLIC_KEY = "pk_test_YOUR_PUBLISHABLE_KEY_HERE"
+$SECRET_KEY = "sk_test_YOUR_SECRET_KEY_HERE"
 
 # Chemins
 $rootPath = Split-Path -Parent $MyInvocation.MyCommand.Path

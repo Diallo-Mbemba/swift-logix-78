@@ -10,7 +10,7 @@
 
 #### Fichier `.env` à la racine :
 ```env
-VITE_STRIPE_PUBLISHABLE_KEY=pk_test_51SYfQuDpUNYp5tGjSvwwM05wod5r3b2UTzpeEZ9iZhgfm5r0BzLw4PAp2WbimzSpYsY9ShBZeZKGH5KMED0J5UCq001fMTwNjB
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_YOUR_PUBLISHABLE_KEY_HERE
 VITE_APP_URL=http://localhost:5173
 VITE_API_URL=http://localhost:3000/api
 VITE_DEFAULT_CURRENCY=XAF
@@ -19,7 +19,7 @@ VITE_DEFAULT_CURRENCY=XAF
 #### Fichier `server/.env` :
 ```env
 PORT=3000
-STRIPE_SECRET_KEY=sk_test_51SYfQuDpUNYp5tGjepuKD4X8mCUym8aQ7oaODbdR2B1nrZvmNkmrntuZlmp74gyfMnoZxaBLRK1NHif5tDawtszk00SqMh3AXU
+STRIPE_SECRET_KEY=sk_test_YOUR_SECRET_KEY_HERE
 FRONTEND_URL=http://localhost:5173
 NODE_ENV=development
 ```
