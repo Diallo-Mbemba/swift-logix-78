@@ -5,8 +5,8 @@ Write-Host "🔑 Configuration automatique de Stripe" -ForegroundColor Cyan
 Write-Host ""
 
 # Clés Stripe fournies
-$PUBLIC_KEY = "pk_test_51SYfQuDpUNYp5tGjSvwwM05wod5r3b2UTzpeEZ9iZhgfm5r0BzLw4PAp2WbimzSpYsY9ShBZeZKGH5KMED0J5UCq001fMTwNjB"
-$SECRET_KEY = "sk_test_51SYfQuDpUNYp5tGjepuKD4X8mCUym8aQ7oaODbdR2B1nrZvmNkmrntuZlmp74gyfMnoZxaBLRK1NHif5tDawtszk00SqMh3AXU"
+$PUBLIC_KEY = "pk_test_YOUR_PUBLISHABLE_KEY_HERE"
+$SECRET_KEY = "sk_test_YOUR_SECRET_KEY_HERE"
 
 # Contenu du fichier .env frontend
 $FRONTEND_ENV = @"
@@ -23,7 +23,7 @@ VITE_API_URL=http://localhost:3000/api
 VITE_DEFAULT_CURRENCY=XAF
 
 # OpenAI Configuration (Optionnel)
-VITE_OPENAI_API_KEY=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
+VITE_OPENAI_API_KEY=sk-proj_YOUR_OPENAI_API_KEY_HERE
 "@
 
 # Contenu du fichier .env backend

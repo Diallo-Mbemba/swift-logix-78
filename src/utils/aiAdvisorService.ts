@@ -85,7 +85,7 @@ interface AIAdviceResult {
 }
 
 // Clé API OpenAI pour les conseils admin
-const OPENAI_API_KEY = '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';
+const OPENAI_API_KEY = process.env.VITE_OPENAI_API_KEY || 'YOUR_OPENAI_API_KEY_HERE';
 
 export class AIAdvisorService {
   /**

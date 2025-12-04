@@ -12,8 +12,8 @@ Voici comment finaliser la configuration avec vos clés de test.
 
 ```env
 # Stripe Configuration
-VITE_STRIPE_PUBLISHABLE_KEY=pk_test_51SYfQuDpUNYp5tGjSvwwM05wod5r3b2UTzpeEZ9iZhgfm5r0BzLw4PAp2WbimzSpYsY9ShBZeZKGH5KMED0J5UCq001fMTwNjB
-VITE_STRIPE_SECRET_KEY=sk_test_51SYfQuDpUNYp5tGjepuKD4X8mCUym8aQ7oaODbdR2B1nrZvmNkmrntuZlmp74gyfMnoZxaBLRK1NHif5tDawtszk00SqMh3AXU
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_YOUR_PUBLISHABLE_KEY_HERE
+VITE_STRIPE_SECRET_KEY=sk_test_YOUR_SECRET_KEY_HERE
 VITE_STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
 
 # Application Configuration
@@ -24,7 +24,7 @@ VITE_API_URL=http://localhost:3000/api
 VITE_DEFAULT_CURRENCY=XAF
 
 # OpenAI Configuration (Optionnel)
-VITE_OPENAI_API_KEY=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
+VITE_OPENAI_API_KEY=sk-proj_YOUR_OPENAI_API_KEY_HERE
 ```
 
 **Fichier à créer :** `.env` (à la racine, au même niveau que `package.json`)
@@ -40,7 +40,7 @@ Dans le dossier `server/`, créez un fichier `.env` avec ce contenu :
 PORT=3000
 
 # Stripe Secret Key (CÔTÉ SERVEUR UNIQUEMENT)
-STRIPE_SECRET_KEY=sk_test_51SYfQuDpUNYp5tGjepuKD4X8mCUym8aQ7oaODbdR2B1nrZvmNkmrntuZlmp74gyfMnoZxaBLRK1NHif5tDawtszk00SqMh3AXU
+STRIPE_SECRET_KEY=sk_test_YOUR_SECRET_KEY_HERE
 
 # Webhook Secret (obtenu après configuration du webhook avec Stripe CLI)
 STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
