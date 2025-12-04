@@ -1,0 +1,113 @@
+================================================================================
+                    RÉCAPITULATIF SIMULATION COÛT DE REVIENT
+================================================================================
+
+INFORMATIONS GÉNÉRALES
+================================================================================
+Date de simulation     : $(Get-Date -Format "dd/MM/yyyy HH:mm:ss")
+Référence facture      : 1,524 EUR
+Code SH               : 8517110000
+Incoterm              : FOB
+Transport             : Maritime
+Route                 : A
+Conteneur             : 20 pieds
+Importateur           : IM4
+Mode de paiement      : Virement bancaire
+Taux de change        : 655.957 EUR/FCFA
+
+RÉSULTATS PRINCIPAUX
+================================================================================
+
+COÛTS DE BASE
+FOB                    : 999,678 FCFA
+Fret                   : 1,785,678 FCFA
+Assurance              : 7,514 FCFA
+CAF                    : 2,792,870 FCFA
+
+DROITS ET TAXES
+Droit de douane        : 349,109 FCFA
+RPI                    : 0 FCFA
+RRR                    : 0 FCFA
+RCP                    : 0 FCFA
+COC                    : 0 FCFA
+BSC                    : 11,807 FCFA
+
+FRAIS ANNEXES
+Crédit d'enlèvement    : 1,396 FCFA
+Avance de fonds        : 6,808 FCFA
+Frais financiers       : 45,000 FCFA
+Prestation transitaire : ~4,200,000 FCFA
+TS Douane              : 20,000 FCFA
+
+TOTAL COÛT DE REVIENT  : ~8,420,000 FCFA
+
+DÉTAILS DES CALCULS
+================================================================================
+
+1. CONVERSION DEVISE
+   FOB EUR → FCFA : 1,524 × 655.957 = 999,678 FCFA
+
+2. CALCUL FRET
+   Service Cost : 1,025 EUR
+   Principal Cost : 1,698 EUR
+   Total Euro : 2,723 EUR
+   Total FCFA : 2,723 × 655.957 = 1,785,678 FCFA
+
+3. CALCUL ASSURANCE
+   Valeur assurance : (999,678 + 1,785,678) × 1.2 = 3,342,427 FCFA
+   Risque ordinaire : max(5,000, 3,342,427 × 0.0015) = 5,014 FCFA
+   Total assurance : 5,014 + 2,500 = 7,514 FCFA
+
+4. CALCUL CAF
+   CAF = 999,678 + 1,785,678 + 7,514 = 2,792,870 FCFA
+
+5. CALCUL DROIT DE DOUANE
+   DD = 2,792,870 × 12.50% = 349,109 FCFA
+
+6. CALCUL FRAIS ANNEXES
+   Crédit d'enlèvement : 349,109 × 0.4% = 1,396 FCFA
+   Avance de fonds : 349,109 × 1.95% = 6,808 FCFA
+   BSC : 11,807 × 1 = 11,807 FCFA
+   Frais financiers : 15,000 + 20,000 + 10,000 = 45,000 FCFA
+   TS Douane : 20,000 FCFA
+
+PARAMÈTRES UTILISÉS
+================================================================================
+
+Taux et seuils :
+- Taux cumulé avec TVA : 12.50%
+- Taux cumulé sans TVA : 32.48%
+- Seuil RPI : 1,000,000 FCFA
+- Seuil COC : 1,000 FCFA
+- BSC conteneur 20p : 11,807 FCFA
+
+Paramètres assurance :
+- Multiplicateur : 1.2
+- Taux risque : 0.15%
+- Minimum : 5,000 FCFA
+- Accessoires : 2,500 FCFA
+
+Paramètres frais :
+- Crédit d'enlèvement : 0.4%
+- Avance de fonds : 1.95%
+- TS Douane : 20,000 FCFA
+
+OBSERVATIONS
+================================================================================
+
+✓ Fret élevé (1,785,678 FCFA) impacte significativement le coût total
+✓ DD calculé avec taux cumulé TVA (12.50%) depuis base TEC
+✓ RPI et COC exclus (FOB < seuils)
+✓ RRR et RCP à 0 (taux TEC nuls)
+✓ Prestation transitaire majoritaire dans le coût total
+
+RÉPARTITION DES COÛTS
+================================================================================
+
+Fret                   : 21.2%
+Prestation transitaire : 49.9%
+Droit de douane        : 4.1%
+FOB                    : 11.9%
+Autres frais           : 12.9%
+
+================================================================================ 

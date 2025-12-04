@@ -1,0 +1,38 @@
+﻿          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-2 flex items-center">
+              Frais imprévus (FCFA) {renderModeBadge(!!autoCalculations.fraisImprevus)}
+              <DetailedCalculationModal
+                title="Calcul des Frais Imprévus"
+                formula="Frais imprévus = Valeur CAF × Taux paramétrable"
+                explanation="Les frais imprévus sont calculés sur la valeur CAF (FOB + Fret + Assurance) à un taux paramétrable (par défaut 5%)."
+                details={[
+                  { label: "Valeur CAF", value: `${formatCurrency(cafValue)}`, description: "FOB + Fret + Assurance" },
+                  { label: "Taux paramétrable", value: `${(settings.cafFraisImprevusRate * 100).toFixed(1)}%`, description: "Configurable dans les paramètres" },
+                  { label: "Calcul", value: `${formatCurrency(cafValue * settings.cafFraisImprevusRate)}`, description: "CAF × Taux" }
+                ]}
+              >
+                <div className="text-xs text-gray-600 mt-2">
+                  <p><strong>Frais imprévus :</strong> Provision pour frais non prévus</p>
+                  <p><strong>Taux par défaut :</strong> 5% de la valeur CAF</p>
+                  <p><strong>Base :</strong> Valeur totale des marchandises (FOB + Fret + Assurance)</p>
+                  <p><strong>Paramétrage :</strong> Le taux peut être modifié dans les paramètres</p>
+                </div>
+              </DetailedCalculationModal>
+            </label>
+            <input
+              type="text"
+              name="fraisImprevus"
+              value={formatNumber(formData.fraisImprevus)}
+              onChange={(e) => {
+                const cleanedValue = cleanNumberValue(e.target.value);
+                handleInputChange({
+                  ...e,
+                  target: { ...e.target, name: "fraisImprevus", value: cleanedValue }
+                });
+              }}
+              readOnly={!!autoCalculations.fraisImprevus}
+              title={autoCalculations.fraisImprevus ? "Calcul automatique activé" : undefined}
+              className={`w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 placeholder-gray-400 ${autoCalculations.fraisImprevus ? "bg-gray-100 cursor-not-allowed font-bold text-lg" : ""}`}
+              placeholder="0"
+            />
+          </div>

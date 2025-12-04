@@ -1,0 +1,142 @@
+================================================================================
+                    SIMULATION COÛT DE REVIENT - ÉTAPE 6
+================================================================================
+
+DONNÉES D'ENTRÉE
+================================================================================
+Facture                    : 1,524 EUR
+Poids                      : 0.001 kg
+Incoterm                   : FOB
+Transport                  : Maritime
+Route                      : A
+Conteneur                  : 20 pieds
+Importateur                : IM4
+Mode de paiement           : Virement bancaire
+Code SH                    : 8517110000
+Taux cumulé avec TVA       : 12.50%
+Taux cumulé sans TVA       : 32.48%
+Taux de change             : 655.957 EUR/FCFA
+
+CALCULS DÉTAILLÉS
+================================================================================
+
+1. FOB (en EUR)
+   FOB = 1,524 EUR
+   FOB en FCFA = 1,524 × 655.957 = 999,678 FCFA
+
+2. FRET (FCFA)
+   Service Cost = 75 + 25 + 45 + 75 + 175 + 40 + 220 + 370 = 1,025 EUR
+   Principal Cost = 370 + 0 + 300 + 500 + 85 + 75 + 55 + 50 + 50 + 200 + 4 + 9 = 1,698 EUR
+   Fret Total Euro = 1,025 + 1,698 = 2,723 EUR
+   Fret Total FCFA = 2,723 × 655.957 × 1 = 1,785,678 FCFA
+
+3. ASSURANCE (FCFA)
+   Valeur assurance = (FOB + Fret) × 1.2 = (999,678 + 1,785,678) × 1.2 = 3,342,427 FCFA
+   Risque ordinaire = max(5,000, 3,342,427 × 0.0015) = max(5,000, 5,014) = 5,014 FCFA
+   Accessoires = 2,500 FCFA
+   Assurance = 5,014 + 2,500 = 7,514 FCFA
+
+4. CAF
+   CAF = FOB + Fret + Assurance = 999,678 + 1,785,678 + 7,514 = 2,792,870 FCFA
+
+5. DROIT DE DOUANE (FCFA)
+   DD = CAF × (Taux cumulé avec TVA / 100)
+   DD = 2,792,870 × (12.50 / 100) = 349,109 FCFA
+
+6. RPI (FCFA)
+   Pour route A, seuil < 1,000,000 FCFA
+   RPI = 0 FCFA (exclu car FOB < seuil minimum)
+
+7. RRR (FCFA)
+   RRR = CAF × (Taux RRR TEC / 100)
+   RRR = 2,792,870 × (0 / 100) = 0 FCFA (taux RRR = 0 dans TEC)
+
+8. RCP (FCFA)
+   RCP = CAF × (Taux RCP TEC / 100)
+   RCP = 2,792,870 × (0 / 100) = 0 FCFA (taux RCP = 0 dans TEC)
+
+9. COC (FCFA)
+   FOB total VOC = 999,678 FCFA (si article dans VOC)
+   Seuil COC = 1,000 FCFA
+   FOB < seuil → COC = 0 FCFA
+
+10. BSC (FCFA)
+    BSC = 11,807 × 1 = 11,807 FCFA
+
+11. CRÉDIT D'ENLÈVEMENT (FCFA)
+    Crédit d'enlèvement = DD × 0.004 = 349,109 × 0.004 = 1,396 FCFA
+
+12. AVANCE DE FONDS (FCFA)
+    Avance de fonds = DD × 0.0195 = 349,109 × 0.0195 = 6,808 FCFA
+
+13. FRAIS FINANCIERS (FCFA)
+    Mode virement bancaire :
+    Frais financiers = 15,000 + 20,000 + 10,000 = 45,000 FCFA
+
+14. PRESTATION TRANSITAIRE (FCFA)
+    Total Intervention ≈ 3,500,000 FCFA (approximatif)
+    Commission avance = 3,500,000 × 0.0195 = 68,250 FCFA
+    Prestation transitaire ≈ 4,200,000 FCFA (approximatif)
+
+15. TS DOUANE (FCFA)
+    TS Douane = 20,000 FCFA (frais fixes)
+
+TABLEAU RÉCAPITULATIF
+================================================================================
+| N° | Terme                    | Montant (FCFA) | Calcul                    |
+|----|--------------------------|----------------|---------------------------|
+| 1  | FOB                      | 999,678        | 1,524 EUR × 655.957       |
+| 2  | Fret                     | 1,785,678      | 2,723 EUR × 655.957       |
+| 3  | Assurance                | 7,514          | Risque ordinaire + Accessoires |
+| 4  | CAF                      | 2,792,870      | FOB + Fret + Assurance    |
+| 5  | Droit de douane          | 349,109        | CAF × 12.50% (avec TVA)   |
+| 6  | RPI                      | 0              | Exclu (FOB < seuil)       |
+| 7  | RRR                      | 0              | CAF × 0% (TEC)            |
+| 8  | RCP                      | 0              | CAF × 0% (TEC)            |
+| 9  | COC                      | 0              | Exclu (FOB < seuil)       |
+| 10 | BSC                      | 11,807         | 11,807 × 1 conteneur      |
+| 11 | Crédit d'enlèvement      | 1,396          | DD × 0.4%                 |
+| 12 | Avance de fonds          | 6,808          | DD × 1.95%                |
+| 13 | Frais financiers         | 45,000         | Frais fixes virement      |
+| 14 | Prestation transitaire   | ~4,200,000     | Calcul complexe           |
+| 15 | TS Douane                | 20,000         | Frais fixes               |
+|    |                          |                |                           |
+|    | TOTAL COÛT DE REVIENT    | ~8,420,000     |                           |
+
+DÉTAILS DES PARAMÈTRES UTILISÉS
+================================================================================
+
+Taux de change EUR/FCFA        : 655.957
+Taux cumulé avec TVA          : 12.50%
+Taux cumulé sans TVA          : 32.48%
+TVA activée                   : OUI (par défaut)
+
+Paramètres assurance :
+- Multiplicateur valeur assurance : 1.2
+- Taux risque ordinaire : 0.15%
+- Minimum risque ordinaire : 5,000 FCFA
+- Accessoires : 2,500 FCFA
+
+Paramètres BSC :
+- Conteneur 20 pieds : 11,807 FCFA
+
+Paramètres frais financiers (virement) :
+- Frais dossier : 15,000 FCFA
+- Frais SWIFT : 20,000 FCFA
+- Frais photocopie : 10,000 FCFA
+
+Paramètres autres :
+- Crédit d'enlèvement : 0.4% du DD
+- Avance de fonds : 1.95% du DD
+- TS Douane : 20,000 FCFA (frais fixes)
+
+NOTES IMPORTANTES
+================================================================================
+- Le fret élevé (1,785,678 FCFA) impacte significativement le coût total
+- Le DD utilise le taux cumulé avec TVA de 12.50% depuis la base TEC
+- RPI et COC sont exclus car FOB < seuils minimums
+- RRR et RCP sont à 0 car les taux dans la base TEC sont nuls
+- La prestation transitaire est approximative (calcul complexe)
+
+Date de simulation : $(Get-Date -Format "dd/MM/yyyy HH:mm:ss")
+================================================================================ 

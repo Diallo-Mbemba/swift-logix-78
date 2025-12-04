@@ -1,0 +1,263 @@
+import React, { useState } from 'react';
+import { Plan } from '../../types';
+import { useAuth } from '../../contexts/AuthContext';
+import { X, CreditCard, Lock } from 'lucide-react';
+
+interface PaymentModalProps {
+  plan: Plan;
+  onClose: () => void;
+  onSuccess: () => void;
+}
+
+const PaymentModal: React.FC<PaymentModalProps> = ({ plan, onClose, onSuccess }) => {
+  const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'lygos' | 'caisse_oic'>('stripe');
+  const [cardData, setCardData] = useState({
+    number: '',
+    expiry: '',
+    cvv: '',
+    name: ''
+  });
+  const [lygosRef, setLygosRef] = useState('');
+  const { updateUser, user } = useAuth();
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'XAF',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(price);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    
+    if (name === 'number') {
+      // Format card number with spaces
+      const formattedValue = value.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim();
+      setCardData(prev => ({ ...prev, [name]: formattedValue }));
+    } else if (name === 'expiry') {
+      // Format expiry date
+      const formattedValue = value.replace(/\D/g, '').replace(/(\d{2})(\d)/, '$1/$2');
+      setCardData(prev => ({ ...prev, [name]: formattedValue }));
+    } else {
+      setCardData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const applyCreditsAndFinish = () => {
+    if (user) {
+      updateUser({
+        plan: plan.id,
+        remainingCredits: plan.credits,
+        totalCredits: plan.credits
+      });
+    }
+    setLoading(false);
+    onSuccess();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    // Simulations distinctes par mode
+    if (paymentMethod === 'stripe') {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      applyCreditsAndFinish();
+      return;
+    }
+
+    if (paymentMethod === 'lygos') {
+      // Petite validation simulée: une référence est requise
+      if (!lygosRef.trim()) {
+        setLoading(false);
+        return;
+      }
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      applyCreditsAndFinish();
+      return;
+    }
+
+    if (paymentMethod === 'caisse_oic') {
+      // Simule une validation côté caisse
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      applyCreditsAndFinish();
+      return;
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-lg max-w-md w-full p-6 border border-gray-300 shadow-cote-ivoire-xl">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-gray-800">Paiement sécurisé</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="mb-6 p-4 bg-cote-ivoire-lighter rounded-lg border border-cote-ivoire-light">
+          <div className="flex items-center justify-between">
+            <span className="font-medium text-gray-800">Plan {plan.name}</span>
+            <span className="text-xl font-bold text-gray-800">
+              {formatPrice(plan.price)}
+            </span>
+          </div>
+          <p className="text-sm text-gray-600 mt-1">
+            {plan.credits} simulation{plan.credits > 1 ? 's' : ''}
+          </p>
+        </div>
+
+        {/* Sélecteur de mode de paiement */}
+        <div className="mb-4 grid grid-cols-3 gap-2">
+          <button
+            type="button"
+            onClick={() => setPaymentMethod('stripe')}
+            className={`text-sm px-3 py-2 rounded-md border ${paymentMethod === 'stripe' ? 'border-cote-ivoire-primary text-cote-ivoire-primary bg-cote-ivoire-primary/5' : 'border-cote-ivoire-medium text-gray-700 bg-white'}`}
+            disabled={loading}
+          >
+            Stripe
+          </button>
+          <button
+            type="button"
+            onClick={() => setPaymentMethod('lygos')}
+            className={`text-sm px-3 py-2 rounded-md border ${paymentMethod === 'lygos' ? 'border-cote-ivoire-primary text-cote-ivoire-primary bg-cote-ivoire-primary/5' : 'border-cote-ivoire-medium text-gray-700 bg-white'}`}
+            disabled={loading}
+          >
+            Lygos
+          </button>
+          <button
+            type="button"
+            onClick={() => setPaymentMethod('caisse_oic')}
+            className={`text-sm px-3 py-2 rounded-md border ${paymentMethod === 'caisse_oic' ? 'border-cote-ivoire-primary text-cote-ivoire-primary bg-cote-ivoire-primary/5' : 'border-cote-ivoire-medium text-gray-700 bg-white'}`}
+            disabled={loading}
+          >
+            Caisse OIC
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {paymentMethod === 'stripe' && (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nom sur la carte
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={cardData.name}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 bg-white border border-cote-ivoire-medium rounded-md focus:outline-none focus:ring-2 focus:ring-cote-ivoire-primary focus:border-cote-ivoire-primary text-gray-800 placeholder-gray-500"
+                  placeholder="Nom complet"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Numéro de carte
+                </label>
+                <input
+                  type="text"
+                  name="number"
+                  value={cardData.number}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 bg-white border border-cote-ivoire-medium rounded-md focus:outline-none focus:ring-2 focus:ring-cote-ivoire-primary focus:border-cote-ivoire-primary text-gray-800 placeholder-gray-500"
+                  placeholder="1234 5678 9012 3456"
+                  maxLength={19}
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Date d'expiration
+                  </label>
+                  <input
+                    type="text"
+                    name="expiry"
+                    value={cardData.expiry}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 bg-white border border-cote-ivoire-medium rounded-md focus:outline-none focus:ring-2 focus:ring-cote-ivoire-primary focus:border-cote-ivoire-primary text-gray-800 placeholder-gray-500"
+                    placeholder="MM/YY"
+                    maxLength={5}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    CVV
+                  </label>
+                  <input
+                    type="text"
+                    name="cvv"
+                    value={cardData.cvv}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 bg-white border border-cote-ivoire-medium rounded-md focus:outline-none focus:ring-2 focus:ring-cote-ivoire-primary focus:border-cote-ivoire-primary text-gray-800 placeholder-gray-500"
+                    placeholder="123"
+                    maxLength={4}
+                    required
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {paymentMethod === 'lygos' && (
+            <>
+              <div className="p-3 rounded-md bg-cote-ivoire-lighter border border-cote-ivoire-light text-sm text-gray-700">
+                Saisissez la référence de paiement Lygos reçue par SMS/app.
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Référence Lygos
+                </label>
+                <input
+                  type="text"
+                  value={lygosRef}
+                  onChange={(e) => setLygosRef(e.target.value)}
+                  className="w-full px-3 py-2 bg-white border border-cote-ivoire-medium rounded-md focus:outline-none focus:ring-2 focus:ring-cote-ivoire-primary focus:border-cote-ivoire-primary text-gray-800 placeholder-gray-500"
+                  placeholder="EX: LYG-123-456"
+                  required
+                />
+              </div>
+            </>
+          )}
+
+          {paymentMethod === 'caisse_oic' && (
+            <div className="space-y-2">
+              <div className="p-3 rounded-md bg-cote-ivoire-lighter border border-cote-ivoire-light text-sm text-gray-700">
+                Vous pouvez régler en espèce/CB à la Caisse OIC. Un reçu sera émis. La validation sera effectuée sous 24h (simulation instantanée ici).
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center space-x-2 p-3 bg-cote-ivoire-success/10 rounded-lg border border-cote-ivoire-success/20">
+            <Lock className="h-4 w-4 text-cote-ivoire-success" />
+            <span className="text-sm text-cote-ivoire-success">
+              Paiement sécurisé par cryptage SSL
+            </span>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-cote-ivoire-primary text-white py-3 px-4 rounded-md hover:bg-cote-ivoire-primary/90 focus:outline-none focus:ring-2 focus:ring-cote-ivoire-primary focus:ring-offset-2 focus:ring-offset-white disabled:opacity-50 transition-colors font-medium flex items-center justify-center space-x-2"
+          >
+            <CreditCard className="h-4 w-4" />
+            <span>{loading ? 'Traitement...' : `${paymentMethod === 'caisse_oic' ? 'Valider' : 'Payer'} ${formatPrice(plan.price)}`}</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default PaymentModal;

@@ -1,0 +1,54 @@
+═══════════════════════════════════════════════════════════════
+  RESOLUTION DE L'ERREUR DU SCRIPT POWERSHELL
+═══════════════════════════════════════════════════════════════
+
+SOLUTION 1 - Utiliser le fichier .BAT (Plus simple)
+─────────────────────────────────────────────────────
+
+   1. Double-cliquez sur: SETUP_STRIPE.bat
+      OU
+      Lancer: configurer-stripe-simple.ps1
+
+SOLUTION 2 - Executer directement en PowerShell
+────────────────────────────────────────────────
+
+   Ouvrez PowerShell et tapez:
+
+   powershell -ExecutionPolicy Bypass -File .\SETUP_STRIPE.ps1
+
+   OU
+
+   powershell -ExecutionPolicy Bypass -File .\configurer-stripe-simple.ps1
+
+SOLUTION 3 - Changer la politique d'execution (une fois)
+─────────────────────────────────────────────────────────
+
+   Ouvrez PowerShell en ADMINISTRATEUR et tapez:
+
+   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+   Puis relancez le script normalement.
+
+═══════════════════════════════════════════════════════════════
+  FICHIERS CREES POUR VOUS
+═══════════════════════════════════════════════════════════════
+
+   ✅ SETUP_STRIPE.ps1          → Script PowerShell ameliore
+   ✅ SETUP_STRIPE.bat          → Lanceur batch (plus simple)
+   ✅ configurer-stripe-simple.ps1 → Version ultra-simple
+   ✅ LANCER_TOUT.bat           → Lance tous les services
+
+═══════════════════════════════════════════════════════════════
+  UTILISATION RAPIDE
+═══════════════════════════════════════════════════════════════
+
+   1. Double-cliquez sur: SETUP_STRIPE.bat
+      → Cree les fichiers .env
+
+   2. Double-cliquez sur: LANCER_TOUT.bat
+      → Demarre tous les services
+
+   C'est tout!
+
+═══════════════════════════════════════════════════════════════
+
