@@ -193,6 +193,14 @@ CREATE INDEX IF NOT EXISTS idx_admin_users_role ON admin_users(role);
 -- ============================================
 -- 9. TRIGGERS POUR updated_at
 -- ============================================
+-- Supprimer les triggers existants avant de les recréer
+DROP TRIGGER IF EXISTS update_users_app_updated_at ON users_app;
+DROP TRIGGER IF EXISTS update_simulations_updated_at ON simulations;
+DROP TRIGGER IF EXISTS update_orders_updated_at ON orders;
+DROP TRIGGER IF EXISTS update_settings_updated_at ON settings;
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+DROP TRIGGER IF EXISTS update_credits_on_pool_change ON credit_pools;
+
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -228,9 +236,11 @@ ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
 
 -- Politiques RLS pour users_app
+DROP POLICY IF EXISTS "Users can view own profile" ON users_app;
 CREATE POLICY "Users can view own profile" ON users_app
   FOR SELECT USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can update own profile" ON users_app;
 CREATE POLICY "Users can update own profile" ON users_app
   FOR UPDATE USING (auth.uid() = id);
 
@@ -238,57 +248,73 @@ CREATE POLICY "Users can update own profile" ON users_app
 -- Le trigger SECURITY DEFINER s'exécute avec les permissions du créateur de la fonction
 
 -- Politiques RLS pour simulations
+DROP POLICY IF EXISTS "Users can view own simulations" ON simulations;
 CREATE POLICY "Users can view own simulations" ON simulations
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own simulations" ON simulations;
 CREATE POLICY "Users can insert own simulations" ON simulations
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own simulations" ON simulations;
 CREATE POLICY "Users can update own simulations" ON simulations
   FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own simulations" ON simulations;
 CREATE POLICY "Users can delete own simulations" ON simulations
   FOR DELETE USING (auth.uid() = user_id);
 
 -- Politiques RLS pour orders
+DROP POLICY IF EXISTS "Users can view own orders" ON orders;
 CREATE POLICY "Users can view own orders" ON orders
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own orders" ON orders;
 CREATE POLICY "Users can insert own orders" ON orders
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- Politiques RLS pour credit_pools
+DROP POLICY IF EXISTS "Users can view own credit pools" ON credit_pools;
 CREATE POLICY "Users can view own credit pools" ON credit_pools
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own credit pools" ON credit_pools;
 CREATE POLICY "Users can insert own credit pools" ON credit_pools
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own credit pools" ON credit_pools;
 CREATE POLICY "Users can update own credit pools" ON credit_pools
   FOR UPDATE USING (auth.uid() = user_id);
 
 -- Politiques RLS pour credit_usage
+DROP POLICY IF EXISTS "Users can view own credit usage" ON credit_usage;
 CREATE POLICY "Users can view own credit usage" ON credit_usage
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own credit usage" ON credit_usage;
 CREATE POLICY "Users can insert own credit usage" ON credit_usage
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- Politiques RLS pour settings
+DROP POLICY IF EXISTS "Users can view own settings" ON settings;
 CREATE POLICY "Users can view own settings" ON settings
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own settings" ON settings;
 CREATE POLICY "Users can insert own settings" ON settings
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own settings" ON settings;
 CREATE POLICY "Users can update own settings" ON settings
   FOR UPDATE USING (auth.uid() = user_id);
 
 -- Politiques pour admin_users (lecture seule pour tous, modification admin uniquement)
+DROP POLICY IF EXISTS "Anyone can view admin users" ON admin_users;
 CREATE POLICY "Anyone can view admin users" ON admin_users
   FOR SELECT USING (true);
 
 -- Politiques pour orders (admins peuvent voir toutes les commandes)
+DROP POLICY IF EXISTS "Admins can view all orders" ON orders;
 CREATE POLICY "Admins can view all orders" ON orders
   FOR SELECT USING (
     EXISTS (
@@ -297,6 +323,7 @@ CREATE POLICY "Admins can view all orders" ON orders
     )
   );
 
+DROP POLICY IF EXISTS "Admins can update all orders" ON orders;
 CREATE POLICY "Admins can update all orders" ON orders
   FOR UPDATE USING (
     EXISTS (
@@ -306,6 +333,7 @@ CREATE POLICY "Admins can update all orders" ON orders
   );
 
 -- Politiques pour order_validations (admins et caissiers)
+DROP POLICY IF EXISTS "Admins and cashiers can view validations" ON order_validations;
 CREATE POLICY "Admins and cashiers can view validations" ON order_validations
   FOR SELECT USING (
     EXISTS (
@@ -314,6 +342,7 @@ CREATE POLICY "Admins and cashiers can view validations" ON order_validations
     )
   );
 
+DROP POLICY IF EXISTS "Admins and cashiers can insert validations" ON order_validations;
 CREATE POLICY "Admins and cashiers can insert validations" ON order_validations
   FOR INSERT WITH CHECK (
     EXISTS (
@@ -378,6 +407,9 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Supprimer le trigger s'il existe déjà
+DROP TRIGGER IF EXISTS update_credits_on_pool_change ON credit_pools;
 
 CREATE TRIGGER update_credits_on_pool_change
   AFTER INSERT OR UPDATE OR DELETE ON credit_pools

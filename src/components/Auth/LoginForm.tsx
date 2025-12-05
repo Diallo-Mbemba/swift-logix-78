@@ -35,21 +35,30 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggleForm, onClose }) => {
       // Afficher le message d'erreur Supabase si disponible
       let errorMessage = 'Une erreur est survenue. Veuillez réessayer.';
       
-      if (err?.message) {
-        errorMessage = err.message;
-      } else if (err?.error?.message) {
-        errorMessage = err.error.message;
-      }
+      // Extraire le message d'erreur
+      const errorCode = err?.code || err?.error?.code;
+      const errorStatus = err?.status || err?.error?.status;
+      const errorMsg = err?.message || err?.error?.message || '';
       
-      // Traduire les messages d'erreur courants
-      if (errorMessage.includes('Invalid login credentials') || errorMessage.includes('Email not confirmed')) {
-        errorMessage = 'Email ou mot de passe incorrect. Vérifiez aussi que vous avez confirmé votre email.';
-      } else if (errorMessage.includes('Email not confirmed')) {
-        errorMessage = 'Veuillez confirmer votre email avant de vous connecter. Vérifiez votre boîte de réception.';
-      } else if (errorMessage.includes('User not found')) {
-        errorMessage = 'Aucun compte trouvé avec cet email.';
-      } else if (errorMessage.includes('Too many requests')) {
-        errorMessage = 'Trop de tentatives. Veuillez patienter quelques instants.';
+      // Gérer les erreurs spécifiques selon le code
+      if (errorCode === 'invalid_credentials' || errorStatus === 400) {
+        if (errorMsg.includes('Email not confirmed') || errorMsg.includes('email confirmation')) {
+          errorMessage = 'Veuillez confirmer votre email avant de vous connecter. Vérifiez votre boîte de réception (et les spams).';
+        } else {
+          errorMessage = 'Email ou mot de passe incorrect. Vérifiez vos identifiants et assurez-vous que vous avez confirmé votre email.';
+        }
+      } else if (errorMsg.includes('Invalid login credentials')) {
+        errorMessage = 'Email ou mot de passe incorrect. Si vous venez de vous inscrire, vérifiez que vous avez confirmé votre email.';
+      } else if (errorMsg.includes('Email not confirmed') || errorMsg.includes('email confirmation')) {
+        errorMessage = 'Veuillez confirmer votre email avant de vous connecter. Vérifiez votre boîte de réception (et les spams).';
+      } else if (errorMsg.includes('User not found') || errorMsg.includes('No user found')) {
+        errorMessage = 'Aucun compte trouvé avec cet email. Vérifiez votre adresse email ou créez un compte.';
+      } else if (errorMsg.includes('Too many requests') || errorStatus === 429) {
+        errorMessage = 'Trop de tentatives de connexion. Veuillez patienter quelques instants avant de réessayer.';
+      } else if (errorMsg.includes('Network') || errorMsg.includes('fetch')) {
+        errorMessage = 'Erreur de connexion réseau. Vérifiez votre connexion internet.';
+      } else if (errorMsg) {
+        errorMessage = errorMsg;
       }
       
       setError(errorMessage);

@@ -355,6 +355,10 @@ const SimulatorForm: React.FC<SimulatorFormProps> = ({ simulationId: propSimulat
     includeTransitaire: true
   });
 
+  // Ã‰tats pour la configuration de l'assurance
+  const [includeWarRisk, setIncludeWarRisk] = useState(true); // Risque de Guerre inclus par défaut
+  const [ordinaryRiskRateOverride, setOrdinaryRiskRateOverride] = useState<string>(''); // Taux personnalisé du Risque Ordinaire (vide = utiliser settings.ordinaryRiskRate)
+
   // Ã‰tats pour les données du formulaire
   const [formData, setFormData] = useState({
     // Informations générales
@@ -1864,6 +1868,8 @@ const SimulatorForm: React.FC<SimulatorFormProps> = ({ simulationId: propSimulat
         selectedActors,
         articles,
         correctionHistory,
+        includeWarRisk,
+        ordinaryRiskRateOverride,
       } as const;
       
       if (!simulationId) {
@@ -1889,7 +1895,7 @@ const SimulatorForm: React.FC<SimulatorFormProps> = ({ simulationId: propSimulat
     
     return () => clearTimeout(timeoutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData, autoCalculations, criteria, selectedActors, articles, activeTab, maxStepReached, loading, showResult, simulations]);
+  }, [formData, autoCalculations, criteria, selectedActors, articles, activeTab, maxStepReached, loading, showResult, simulations, includeWarRisk, ordinaryRiskRateOverride]);
 
   // Pré-remplissage si simulationId fourni
   useEffect(() => {
@@ -1933,6 +1939,14 @@ const SimulatorForm: React.FC<SimulatorFormProps> = ({ simulationId: propSimulat
         // Restaurer les critères
         if (sim.criteria) {
           setCriteria(sim.criteria);
+        }
+        
+        // Restaurer les paramètres d'assurance
+        if ((sim as any).includeWarRisk !== undefined) {
+          setIncludeWarRisk((sim as any).includeWarRisk);
+        }
+        if ((sim as any).ordinaryRiskRateOverride !== undefined) {
+          setOrdinaryRiskRateOverride((sim as any).ordinaryRiskRateOverride || '');
         }
         
         // Restaurer les acteurs sélectionnés
@@ -2413,7 +2427,13 @@ const SimulatorForm: React.FC<SimulatorFormProps> = ({ simulationId: propSimulat
     const fob = Math.round(Number(formData.fob || 0));
     const fret = Math.round(Number(formData.fret || 0));
     const valeurAssurance = Math.round((fob + fret) * Number(settings.assuranceValueMultiplier));
-    let risqueOrdinaire = Math.round(valeurAssurance * Number(settings.ordinaryRiskRate));
+    
+    // Utiliser le taux personnalisé si défini, sinon utiliser le taux par défaut
+    const tauxRisqueOrdinaire = ordinaryRiskRateOverride 
+      ? parseFloat(ordinaryRiskRateOverride) || Number(settings.ordinaryRiskRate)
+      : Number(settings.ordinaryRiskRate);
+    
+    let risqueOrdinaire = Math.round(valeurAssurance * tauxRisqueOrdinaire);
     if (risqueOrdinaire < Number(settings.ordinaryRiskMinimum)) {
       risqueOrdinaire = Number(settings.ordinaryRiskMinimum);
     }
@@ -2425,11 +2445,16 @@ const SimulatorForm: React.FC<SimulatorFormProps> = ({ simulationId: propSimulat
     } else {
       taxe = 0;
     }
-    const risqueGuerre = Math.round(valeurAssurance * Number(settings.warRiskRate));
+    
+    // Inclure le Risque de Guerre seulement si activé
+    const risqueGuerre = includeWarRisk 
+      ? Math.round(valeurAssurance * Number(settings.warRiskRate))
+      : 0;
+    
     const prime = Math.round(risqueOrdinaire + accessoires + taxe + risqueGuerre);
     const next = prime.toString();
     setFormData(prev => (prev.assurance !== next ? { ...prev, assurance: next } : prev));
-  }, [autoCalculations.assurance, formData.fob, formData.fret, formData.modeTransport, settings.assuranceValueMultiplier, settings.ordinaryRiskRate, settings.ordinaryRiskMinimum, settings.accessoriesFlat, settings.airTaxMultiplier, settings.warRiskRate]);
+  }, [autoCalculations.assurance, formData.fob, formData.fret, formData.modeTransport, settings.assuranceValueMultiplier, settings.ordinaryRiskRate, settings.ordinaryRiskMinimum, settings.accessoriesFlat, settings.airTaxMultiplier, settings.warRiskRate, includeWarRisk, ordinaryRiskRateOverride]);
 
   // Calcul automatique du BSC
   useEffect(() => {
@@ -3433,6 +3458,73 @@ const SimulatorForm: React.FC<SimulatorFormProps> = ({ simulationId: propSimulat
         <p className="text-cote-ivoire-primary text-sm">
           Configurez les calculs automatiques pour optimiser votre simulation
         </p>
+        
+        {/* Configuration du Risque de Guerre et du Risque Ordinaire */}
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Risque de Guerre */}
+          <div className="bg-white/80 border border-gray-300 rounded-lg p-4">
+            <div className="flex items-start justify-between">
+              <div className="flex items-start space-x-3 flex-1">
+                <div className="p-2 rounded-lg bg-red-500 text-white">
+                  <Shield className="h-5 w-5" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-semibold text-gray-800 mb-1">Inclure le Risque de Guerre</h4>
+                  <p className="text-sm text-gray-600">
+                    Inclure ou exclure le Risque de Guerre dans le calcul de la prime d'assurance
+                  </p>
+                  <div className="mt-2 text-xs text-gray-500">
+                    {includeWarRisk ? 'Risque de Guerre inclus' : 'Risque de Guerre exclu'}
+                  </div>
+                </div>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer ml-3">
+                <input
+                  type="checkbox"
+                  checked={includeWarRisk}
+                  onChange={(e) => setIncludeWarRisk(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
+              </label>
+            </div>
+          </div>
+
+          {/* Taux du Risque Ordinaire */}
+          <div className="bg-white/80 border border-gray-300 rounded-lg p-4">
+            <div className="flex items-start space-x-3">
+              <div className="p-2 rounded-lg bg-blue-500 text-white">
+                <Calculator className="h-5 w-5" />
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm font-semibold text-gray-800 mb-2">
+                  Taux du Risque Ordinaire (VO)
+                </label>
+                <p className="text-xs text-gray-600 mb-2">
+                  Taux par défaut: 0.15% (0.0015). Laissez vide pour utiliser la valeur par défaut.
+                </p>
+                <input
+                  type="text"
+                  value={ordinaryRiskRateOverride}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Permettre les nombres décimaux (ex: 0.0015 pour 0.15%)
+                    if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                      setOrdinaryRiskRateOverride(value);
+                    }
+                  }}
+                  placeholder={`Par défaut: ${(Number(settings?.ordinaryRiskRate) || 0.0015) * 100}%`}
+                  className="w-full px-3 py-2 bg-cote-ivoire-lighter border border-gray-300 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  {ordinaryRiskRateOverride 
+                    ? `Taux personnalisé: ${(parseFloat(ordinaryRiskRateOverride) || 0) * 100}%`
+                    : `Taux par défaut: ${(Number(settings?.ordinaryRiskRate) || 0.0015) * 100}%`}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Grille des calculs automatiques */}
